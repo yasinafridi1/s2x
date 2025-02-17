@@ -131,20 +131,33 @@ const updateProfile = AsyncWrapper(async (req, res, next) => {
 });
 
 const addUpdateUserToken = AsyncWrapper(async (req, res, next) => {
-  const { token, type } = req.body;
-  const user = await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      [type]: token,
-    },
-    { new: true }
-  );
-
+  const { token, pageId, userId, type } = req.body;
+  const user = await User.findById(req.user._id);
   if (!user) {
     return next(new ErrorHandler("User not found", 404));
   }
-  return SuccessMessage(res, "User token updated successfully", {
-    userData: userDto(user),
+
+  if (type === "facebook") {
+    user.facebook = {
+      token,
+      pageId,
+    };
+  } else if (type === "twitter") {
+    user.twitter = token;
+  } else if (type === "instagram" || type === "linkedin") {
+    user[type] = {
+      token,
+      userId,
+    };
+  } else {
+    return next(new ErrorHandler("Invalid type", 422));
+  }
+
+  const result = await user.save();
+  console.log("USer ===>", result);
+
+  return SuccessMessage(res, "Social keys updated successfully", {
+    userData: userDto(result),
   });
 });
 

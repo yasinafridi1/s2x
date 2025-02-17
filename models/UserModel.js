@@ -28,16 +28,34 @@ const UserSchema = new mongoose.Schema({
     required: false,
   },
   facebook: {
-    type: String,
-    required: false,
+    pageId: {
+      type: String,
+      required: false,
+    },
+    token: {
+      type: String,
+      required: false,
+    },
   },
   instagram: {
-    type: String,
-    required: false,
+    userId: {
+      type: String,
+      required: false,
+    },
+    token: {
+      type: String,
+      required: false,
+    },
   },
   linkedin: {
-    type: String,
-    required: false,
+    userId: {
+      type: String,
+      required: false,
+    },
+    token: {
+      type: String,
+      required: false,
+    },
   },
   twitter: {
     type: String,

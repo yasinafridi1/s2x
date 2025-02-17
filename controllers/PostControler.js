@@ -6,6 +6,12 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const User = require("../models/UserModel");
 const { default: axios } = require("axios");
 const PostModel = require("../models/PostModel");
+const {
+  postToFacebook,
+  postToInstagram,
+  postToLinkedIn,
+  postToTwitter,
+} = require("../utils/Postutils");
 const { openAiSecretKey } = envVariables;
 
 const openai = new OpenAI({
@@ -79,6 +85,7 @@ const generatePostContent = AsyncWrapper(async (req, res, next) => {
 
 const addPost = AsyncWrapper(async (req, res, next) => {
   const { description, type } = req.body;
+  const userData = await User.findById(req.user._id);
   const newPost = new PostModel({
     text: description,
     socialApp: type,
@@ -89,6 +96,33 @@ const addPost = AsyncWrapper(async (req, res, next) => {
   const result = await newPost.save();
   if (!result) {
     return next(new ErrorHandler("Failed to add post", 500));
+  }
+
+  if (type.toLowerCase() === "facebook") {
+    await postToFacebook(
+      userData?.facebook?.token,
+      userData?.facebook?.pageId,
+      result.text,
+      result?.image
+    );
+  } else if (type.toLowerCase() === "instagram") {
+    await postToInstagram(
+      userData?.instagram?.token,
+      userData?.instagram?.userId,
+      result.text,
+      result?.image
+    );
+  } else if (type.toLowerCase() === "linkedin") {
+    await postToLinkedIn(
+      userData?.linkedin?.token,
+      userData?.linkedin?.userId,
+      result.text,
+      result?.image
+    );
+  } else if (type.toLowerCase() === "twitter") {
+    await postToTwitter(userData?.twitter, result.text, result?.image);
+  } else {
+    return next(new ErrorHandler("Invalid social app type", 400)); // or throw a custom error for invalid type
   }
   return SuccessMessage(res, "Post added successfully", result);
 });

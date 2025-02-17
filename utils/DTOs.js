@@ -5,9 +5,12 @@ const userDto = (data) => {
     createdAt: data?.createdAt,
     updatedAt: data?.updatedAt,
     _id: data?._id,
-    facebook: data?.facebook ? true : false,
-    instagram: data?.instagram ? true : false,
-    linkedin: data?.linkedin ? true : false,
+    facebookToken: data?.facebook?.token ? true : false,
+    facebookPageId: data?.facebook?.pageId,
+    instagramToken: data?.instagram?.token ? true : false,
+    instagramUserId: data?.instagram?.userId,
+    linkedinToken: data?.linkedin?.token ? true : false,
+    linkedinUserId: data?.linkedin?.userId,
     twitter: data?.twitter ? true : false,
   };
 };

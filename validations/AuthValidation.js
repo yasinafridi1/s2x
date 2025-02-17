@@ -37,6 +37,20 @@ const AuthValidation = {
       type: Joi.string()
         .required()
         .valid("facebook", "instagram", "linkedin", "twitter"),
+      pageId: Joi.when("type", {
+        is: "facebook",
+        then: Joi.string()
+          .required()
+          .messages({ "any.required": "pageId is required for Facebook" }),
+        otherwise: Joi.optional(),
+      }),
+      userId: Joi.when("type", {
+        is: Joi.valid("instagram", "linkedin"),
+        then: Joi.string().required().messages({
+          "any.required": "userId is required for Instagram and LinkedIn",
+        }),
+        otherwise: Joi.optional(),
+      }),
     }),
   },
 };
